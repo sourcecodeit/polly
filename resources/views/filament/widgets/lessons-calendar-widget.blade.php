@@ -51,7 +51,7 @@
                                 >
                                     <div class="font-medium">{{ $lesson->subject }}</div>
                                     <div>{{ $lesson->classRoom->name }}</div>
-                                    <div>{{ \Carbon\Carbon::parse($lesson->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($lesson->end_time)->format('H:i') }}</div>
+                                    <div>{{ \Carbon\Carbon::parse($lesson->start_time)->format('H:i') }} ({{ $lesson->hours }} h)</div>
                                     <div class="mt-1 flex items-center justify-between">
                                         <span>{{ $lesson->teacher_name }}</span>
                                         <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 dark:bg-primary-800">

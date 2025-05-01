@@ -18,9 +18,10 @@ class Lesson extends Model
      */
     protected $fillable = [
         'class_id',
+        'course_id',
         'subject',
         'start_time',
-        'end_time',
+        'hours',
         'description',
         'teacher_name',
     ];
@@ -32,7 +33,7 @@ class Lesson extends Model
      */
     protected $casts = [
         'start_time' => 'datetime',
-        'end_time' => 'datetime',
+        'hours' => 'decimal:2',
     ];
 
     /**
@@ -41,6 +42,14 @@ class Lesson extends Model
     public function classRoom(): BelongsTo
     {
         return $this->belongsTo(ClassRoom::class, 'class_id');
+    }
+
+    /**
+     * Get the course that owns the lesson.
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
     }
 
     /**

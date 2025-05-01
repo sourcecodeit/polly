@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ClassRoomResource\RelationManagers;
+namespace App\Filament\Resources\CourseResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -10,13 +10,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class LessonsRelationManager extends RelationManager
+class ClassAssignmentsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'lessons';
-    
+    protected static string $relationship = 'classAssignments';
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['class_id'] = $this->getOwnerRecord()->id;
+        $data['course_id'] = $this->getOwnerRecord()->id;
         
         return $data;
     }
@@ -25,26 +25,18 @@ class LessonsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Lesson Information')
+                Forms\Components\Section::make('Assignment Information')
                     ->schema([
                         Forms\Components\TextInput::make('subject')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Select::make('course_id')
-                            ->relationship('course', 'name')
-                            ->searchable()
-                            ->preload(),
-                        Forms\Components\DateTimePicker::make('start_time')
+                        Forms\Components\DatePicker::make('date')
                             ->required(),
-                        Forms\Components\TextInput::make('hours')
-                            ->required()
+                        Forms\Components\TextInput::make('attendances')
                             ->numeric()
-                            ->default(1.0)
-                            ->minValue(0.25)
-                            ->step(0.25),
-                        Forms\Components\TextInput::make('teacher_name')
-                            ->maxLength(255),
-                        Forms\Components\Textarea::make('description')
+                            ->default(0)
+                            ->minValue(0),
+                        Forms\Components\Textarea::make('notes')
                             ->maxLength(65535)
                             ->columnSpanFull(),
                     ]),
@@ -57,32 +49,19 @@ class LessonsRelationManager extends RelationManager
             ->recordTitleAttribute('subject')
             ->columns([
                 Tables\Columns\TextColumn::make('subject')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('course.name')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('start_time')
-                    ->date()
-                    ->label('Date')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('hours')
+                Tables\Columns\TextColumn::make('date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('attendances')
                     ->numeric()
-                    ->sortable()
-                    ->summarize(Tables\Columns\Summarizers\Sum::make()),
-                Tables\Columns\TextColumn::make('attendances_count')
-                    ->counts('attendances')
-                    ->label('Attendances'),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->groups([
-                Tables\Grouping\Group::make('course.name')
-                    ->label('Course')
-                    ->collapsible(),
-            ])
-            ->defaultGroup('course.name')
             ->filters([
                 //
             ])

@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CourseResource\RelationManagers;
 
-use App\Filament\Resources\LessonResource\Pages;
-use App\Filament\Resources\LessonResource\RelationManagers;
-use App\Models\Lesson;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class LessonResource extends Resource
+class LessonsRelationManager extends RelationManager
 {
-    protected static ?string $model = Lesson::class;
+    protected static string $relationship = 'lessons';
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['course_id'] = $this->getOwnerRecord()->id;
+        
+        return $data;
+    }
 
-    protected static ?string $navigationGroup = 'School Management';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -30,10 +30,6 @@ class LessonResource extends Resource
                         Forms\Components\Select::make('class_id')
                             ->relationship('classRoom', 'name')
                             ->required()
-                            ->searchable()
-                            ->preload(),
-                        Forms\Components\Select::make('course_id')
-                            ->relationship('course', 'name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('subject')
@@ -56,17 +52,14 @@ class LessonResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('subject')
             ->columns([
                 Tables\Columns\TextColumn::make('classRoom.name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('course.name')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(),
                 Tables\Columns\TextColumn::make('subject')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('start_time')
@@ -84,43 +77,21 @@ class LessonResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->groups([
-                Tables\Grouping\Group::make('course.name')
-                    ->label('Course')
-                    ->collapsible(),
-            ])
-            ->defaultGroup('course.name')
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationManagers\AttendancesRelationManager::make(),
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListLessons::route('/'),
-            'create' => Pages\CreateLesson::route('/create'),
-            'edit' => Pages\EditLesson::route('/{record}/edit'),
-        ];
     }
 }

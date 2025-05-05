@@ -74,6 +74,7 @@ class LessonResource extends Resource
                     ->label('Date')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('hours')
+                    ->label('Hours')
                     ->numeric()
                     ->sortable()
                     ->summarize(Tables\Columns\Summarizers\Sum::make()),

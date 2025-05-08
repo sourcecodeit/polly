@@ -89,6 +89,7 @@ class CourseResource extends Resource
         return [
             RelationManagers\LessonsRelationManager::make(),
             RelationManagers\ClassAssignmentsRelationManager::make(),
+            RelationManagers\VotesRelationManager::make(),
         ];
     }
 

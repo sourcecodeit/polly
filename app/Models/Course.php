@@ -36,4 +36,12 @@ class Course extends Model
     {
         return $this->hasMany(ClassAssignment::class);
     }
+
+    /**
+     * Get the votes for the course.
+     */
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
+    }
 }

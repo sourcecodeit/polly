@@ -17,6 +17,7 @@ class Vote extends Model
      */
     protected $fillable = [
         'student_id',
+        'course_id',
         'vote_date',
         'value',
         'subject',
@@ -39,5 +40,13 @@ class Vote extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
+    }
+
+    /**
+     * Get the course that the vote belongs to.
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
     }
 }

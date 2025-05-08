@@ -33,6 +33,11 @@ class VoteResource extends Resource
                             ->required()
                             ->searchable()
                             ->preload(),
+                        Forms\Components\Select::make('course_id')
+                            ->relationship('course', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
                         Forms\Components\DatePicker::make('vote_date')
                             ->required()
                             ->default(now()),
@@ -59,6 +64,9 @@ class VoteResource extends Resource
                 Tables\Columns\TextColumn::make('student.full_name')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('course.name')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('vote_date')
                     ->date()
                     ->sortable(),
@@ -80,6 +88,8 @@ class VoteResource extends Resource
                 Tables\Filters\SelectFilter::make('student')
                     ->relationship('student', 'first_name')
                     ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}"),
+                Tables\Filters\SelectFilter::make('course')
+                    ->relationship('course', 'name'),
                 Tables\Filters\Filter::make('vote_date')
                     ->form([
                         Forms\Components\DatePicker::make('vote_date_from'),
